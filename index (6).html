@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7cae0">
+<title>Make a Wish</title>
+<link rel="preload" as="image" href="photo-one.webp">
+<link rel="preload" as="image" href="photo-two.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Caveat:wght@600;700&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box}*,*::before,*::after{box-sizing:inherit}
+body{margin:0;min-width:320px;color:#4a2838;font-family:"DM Sans",system-ui,sans-serif;overflow-x:hidden;background:radial-gradient(circle at 50% 20%,#ffedf5,#f7cae0 60%,#e8a6c9)}
+[hidden]{display:none!important}
+button{font:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid #8c1d53;outline-offset:4px}
+
+/* WISH SCREEN */
+#wish{min-height:100vh;display:grid;place-items:center;padding:max(20px,env(safe-area-inset-top)) 18px max(20px,env(safe-area-inset-bottom))}
+.birthday-card{width:min(100%,450px);padding:clamp(20px,4vw,30px) clamp(20px,6vw,48px) 22px;border:1px solid rgba(255,255,255,.4);border-radius:16px;background:#f7cae0;box-shadow:0 20px 50px rgba(180,100,130,.15);display:flex;flex-direction:column;align-items:center;text-align:center}
+.eyebrow{margin:0 0 6px;color:#8c4a6b;font-size:.84rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.name{color:#8c1d53}
+h1{max-width:22ch;margin:0;font-size:clamp(1.08rem,3.2vw,1.25rem);line-height:1.2;color:#5c2340}
+.subtitle{max-width:34ch;margin:8px 0 2px;color:#6b3550;line-height:1.45}
+.cake-stage{--size:min(68vw,335px);position:relative;width:var(--size);height:calc(var(--size)*.96);margin:12px 0 32px;display:grid;place-items:end center}
+.cake{position:relative;z-index:1;width:94%;height:62%;border-radius:13% 13% 18% 18%;background:linear-gradient(90deg,#4b2a0d,#6f451c 22%,#44280e 58%,#2e1b08)}
+.cake-body span{position:absolute;left:5%;width:90%;height:2px;background:rgba(255,232,180,.16)}
+.cake-body span:first-child{top:31%}.cake-body span:last-child{top:82%}
+.icing{position:absolute;z-index:2;top:-18%;left:-1%;width:102%;height:42%;border-radius:50% 50% 14% 14%;background:linear-gradient(135deg,#ffeaf3,#f8b8d1)}
+.icing::before{content:"";position:absolute;top:39%;left:0;width:100%;height:50%;background:#f8b8d1;border-radius:0 0 42% 42%}
+.icing i{position:absolute;z-index:3;top:67%;width:17%;height:57%;border-radius:0 0 50% 50%;background:#f8b8d1}
+.icing i:nth-child(1){left:10%}.icing i:nth-child(2){left:42%;height:73%}.icing i:nth-child(3){right:9%}
+.plate{position:absolute;z-index:-1;bottom:-12%;left:-5%;width:110%;height:16%;border-radius:50%;background:linear-gradient(#fff,#f2d4e3)}
+.candles{position:absolute;z-index:3;top:0;left:18%;width:64%;overflow:visible}
+.flame{transform-box:fill-box;transform-origin:50% 100%;transition:opacity .35s,transform .35s}
+.flame.on{animation:flicker .18s infinite alternate ease-in-out}
+.flame.off{opacity:0;transform:scaleY(.1)}
+.smoke{opacity:0}.smoke.go{animation:drift 1.8s ease-out forwards}
+.mic-button{min-height:47px;margin:15px 0;padding:0 23px;border:0;border-radius:24px;color:#fff;background:linear-gradient(#ff8dae,#e65c87);box-shadow:0 4px 10px rgba(230,92,135,.35);font-weight:700;transition:transform .18s}
+.mic-button:hover:not(:disabled){transform:translateY(-2px)}
+.mic-button:disabled{cursor:default;opacity:.72}
+.hint{min-height:1.5em;max-width:42ch;margin:13px 0 0;color:#733c56;font-size:.84rem;line-height:1.45}
+.text-button{margin-top:3px;padding:8px 12px;border:0;border-radius:8px;color:#7a3253;background:none;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+canvas{position:fixed;inset:0;z-index:10;width:100%;height:100%;pointer-events:none}
+@keyframes flicker{from{transform:scale(1) rotate(calc(var(--lean,0)*1deg - 2deg))}to{transform:scale(.9,1.1) rotate(calc(var(--lean,0)*1deg + 2deg))}}
+@keyframes drift{0%{opacity:.75}100%{opacity:0;transform:translate(8px,-42px)}}
+
+/* CARDS SCREEN */
+#cards{min-height:100vh;padding:max(30px,env(safe-area-inset-top)) 18px max(28px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;text-align:center;color:#7c2856;background:radial-gradient(circle at 50% 0,#ffeaf3,#f7b6d0 55%,#dc7eaa)}
+.unlock-message{margin:0 0 13px;color:#8d2e5d;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:clamp(.72rem,2.6vw,.86rem)}
+.card-deck{position:relative;width:min(100%,380px);height:clamp(520px,74svh,610px);margin-top:13px}
+.deck-layer{position:absolute;inset:0;border-radius:18px;background:#fffaf0;box-shadow:0 12px 25px rgba(125,40,88,.2)}
+.layer-back{transform:translate(17px,10px) rotate(5deg);opacity:.55}
+.layer-middle{transform:translate(8px,5px) rotate(2.5deg);opacity:.8}
+.story-card{position:relative;z-index:2;width:100%;height:100%;overflow:hidden;border:2px solid rgba(255,255,255,.9);border-radius:18px;background:#fffaf0;box-shadow:0 16px 30px rgba(125,40,88,.25);display:flex;flex-direction:column;transition:opacity .2s,transform .2s}
+.story-card.is-changing{opacity:0;transform:translateX(-15px) rotate(-2deg)}
+.story-card.is-letter{display:block}
+.card-media{height:66%;flex:none;overflow:hidden}
+.memory-photo{width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block}
+.card-copy{flex:1;padding:19px;text-align:left}
+.card-copy h2{margin:0 0 10px;color:#7d2858;font-family:"Bagel Fat One",sans-serif;font-size:1.45rem;font-weight:400;line-height:1.05}
+.letter-copy{height:100%;overflow-y:auto;padding:29px 25px;background:repeating-linear-gradient(0deg,#fff9ed 0 29px,rgba(220,126,170,.16) 30px)}
+.letter-copy p{margin:0 0 16px;color:#884563;font-family:"Caveat",cursive;font-size:1.3rem;font-weight:600;line-height:1.18}
+.letter-copy .signature{color:#ca4b79;font-weight:700}
+.card-controls{margin-top:24px;display:flex;align-items:center;gap:22px}
+.nav-button{width:45px;height:45px;border:0;border-radius:50%;color:#fff;background:#6b3456;font-size:2rem;line-height:1}
+.nav-button:hover{background:#51233f}
+.card-count{min-width:92px;color:#883b61;font-size:.86rem;font-weight:700}
+@media(max-height:700px){.card-deck{height:clamp(500px,75svh,540px)}.card-controls{margin-top:15px}}
+@media(max-height:720px){.cake-stage{--size:min(54vw,260px);margin:0 0 20px}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<main id="wish">
+  <div class="birthday-card">
+    <p class="eyebrow">Happy birthday, <span class="name" id="name">you</span>!</p>
+    <h1>Blow Out The Candles</h1>
+    <p class="subtitle" id="message">Make a wish, then blow toward your microphone.</p>
+    <section class="cake-stage" aria-label="Three lit birthday candles on a cake">
+      <div class="cake" role="img" aria-label="Birthday cake with pink icing">
+        <div class="icing"><i></i><i></i><i></i></div>
+        <div class="cake-body"><span></span><span></span></div>
+        <div class="plate"></div>
+      </div>
+      <svg class="candles" viewBox="0 0 200 105" aria-hidden="true"><g id="candles"></g></svg>
+    </section>
+    <button class="mic-button" id="microphone" type="button"><span id="button-label">Allow Access to Mic</span></button>
+    <p class="hint" id="hint" role="status" aria-live="polite">Your microphone is only used in this browser to detect a blow.</p>
+    <button class="text-button" id="wish-button" type="button">No mic? Celebrate anyway</button>
+  </div>
+</main>
+
+<main id="cards" hidden>
+  <p class="unlock-message">Your wish has been sent ✦</p>
+  <section class="card-deck" aria-label="Birthday card deck">
+    <div class="deck-layer layer-back"></div>
+    <div class="deck-layer layer-middle"></div>
+    <article class="story-card" id="story-card" aria-live="polite">
+      <div class="card-media" id="card-media"></div>
+      <div class="card-copy" id="card-copy"></div>
+    </article>
+  </section>
+  <nav class="card-controls" aria-label="Card navigation">
+    <button class="nav-button" id="previous-card" type="button" aria-label="Previous card">‹</button>
+    <span class="card-count" id="card-count">Card 1 of 3</span>
+    <button class="nav-button" id="next-card" type="button" aria-label="Next card">›</button>
+  </nav>
+</main>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(() => {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  const userName = new URLSearchParams(location.search).get("name")?.trim().slice(0, 24) || "";
+  if (userName) $("name").textContent = userName;
+
+  /* ---------- Candles ---------- */
+  const candlesGroup = $("candles"), microphone = $("microphone"), buttonLabel = $("button-label"),
+        hint = $("hint"), message = $("message"), manualWish = $("wish-button");
+  const candleNodes = [];
+  let finished = false, listening = false, analyser, samples, audioContext, stream;
+  let baseline = 0, calTotal = 0, calFrames = 0, sustained = 0, lastTime = 0;
+
+  [56, 100, 144].forEach(x => {
+    const g = document.createElementNS(NS, "g");
+    g.innerHTML = `<rect x="${x-4}" y="65" width="8" height="38" rx="3" fill="#9d1015"/>
+      <path class="flame on" d="M${x} 34C${x+10} 46 ${x+7} 61 ${x} 61C${x-7} 61 ${x-10} 46 ${x} 34Z" fill="#ffbb2f"/>
+      <path class="smoke" d="M${x} 59q6-10 0-20q-6-9 0-18" fill="none" stroke="#fff8ee" stroke-width="2.5" stroke-linecap="round"/>`;
+    candlesGroup.append(g);
+    candleNodes.push({ flame: g.querySelector(".flame"), smoke: g.querySelector(".smoke") });
+  });
+  const setLean = v => candleNodes.forEach(({ flame }) => flame.style.setProperty("--lean", v));
+
+  /* ---------- Cards ---------- */
+  const slides = [
+    { photo: "photo-one.png", title: "happy birthday melal" },
+    { photo: "photo-two.png", title: "happy birthday keron" },
+    { letter: true, title: `Dear ${userName || "you"},`,
+      message: "Happy birthday 🎂too the most amazing twins I've ever 💗 we I've u guys so much like alot we've been friends for 4 years things aren't the same rn but we had the most amazing friendship we miss u guys a lot 💖 this year u guy's turned 15 u guys i have grown soo much we watched u grow we miss u keron u used to treat us as ur kids acting like our mom even tho ur soooo annoying we miss melal tooo ur unfunny jokes ur weird embarrassing asss we js misss u guys soo much u don't know how life is boring this year hope u guys have the best year and hope u guys come back we LOVE YOU SOOOOOOO SOOOOO MUCHH .",
+      signature: ["Hope u guy's like it", "Fenet, Eldana, Liya 💗🤗💖"] }
+  ];
+  const card = $("story-card"), media = $("card-media"), count = $("card-count");
+  let copy = $("card-copy");
+  let index = 0, cardsReady = false;
+
+  // Build each slide's DOM once; switching just swaps nodes (no re-decoding images)
+  const built = slides.map(s => {
+    const m = document.createDocumentFragment(), c = document.createElement("div");
+    if (s.letter) {
+      c.className = "card-copy letter-copy";
+      const h = document.createElement("h2"); h.textContent = s.title;
+      const p = document.createElement("p"); p.textContent = s.message;
+      const sig = document.createElement("p"); sig.className = "signature";
+      s.signature.forEach((line, i) => { if (i) sig.append(document.createElement("br")); sig.append(line); });
+      c.append(h, p, sig);
+    } else {
+      const img = new Image(); img.className = "memory-photo"; img.alt = "Birthday memory";
+      img.decoding = "async"; img.src = s.photo; m.append(img);
+      c.className = "card-copy";
+      const h = document.createElement("h2"); h.textContent = s.title; c.append(h);
+    }
+    return { m, c, letter: !!s.letter };
+  });
+
+  function render(animate = true) {
+    const show = () => {
+      const b = built[index];
+      card.classList.toggle("is-letter", b.letter);
+      media.hidden = b.letter;
+      media.replaceChildren(b.m);
+      copy.replaceWith(b.c); copy = b.c;
+      count.textContent = `Card ${index + 1} of ${slides.length}`;
+      card.classList.remove("is-changing");
+    };
+    if (!animate) return show();
+    card.classList.add("is-changing");
+    setTimeout(show, 160);
+  }
+  $("previous-card").onclick = () => { index = (index - 1 + slides.length) % slides.length; render(); };
+  $("next-card").onclick = () => { index = (index + 1) % slides.length; render(); };
+
+  function showCards() {
+    $("wish").hidden = true; $("cards").hidden = false;
+    document.title = "A Birthday Letter";
+    if (!cardsReady) { cardsReady = true; render(false); }
+  }
+
+  /* ---------- Finish ---------- */
+  function finish() {
+    if (finished) return; finished = true;
+    microphone.disabled = true; buttonLabel.textContent = "Wish granted!"; manualWish.hidden = true;
+    hint.textContent = "✨ Your wish is on its way.";
+    stream?.getTracks().forEach(t => t.stop());
+    audioContext?.close().catch(() => {});
+    candleNodes.forEach(({ flame, smoke }, i) => setTimeout(() => {
+      flame.classList.replace("on", "off");
+      smoke.classList.remove("go"); void smoke.getBoundingClientRect(); smoke.classList.add("go");
+    }, i * 120));
+    setLean(0);
+    setTimeout(() => { message.textContent = "Your wish is on its way. Happy birthday!"; confetti(); }, 700);
+    setTimeout(showCards, 2200);
+  }
+
+  function listen(t) {
+    if (!listening || finished) return;
+    requestAnimationFrame(listen);
+    analyser.getByteTimeDomainData(samples);
+    let sum = 0;
+    for (const s of samples) { const v = (s - 128) / 128; sum += v * v; }
+    const rms = Math.sqrt(sum / samples.length);
+    if (calFrames < 40) {
+      calTotal += rms; calFrames++; lastTime = t;
+      if (calFrames === 40) { baseline = calTotal / 40; hint.textContent = "Ready! A gentle blow toward your device will do it."; }
+      return;
+    }
+    const level = Math.max(0, rms - baseline);
+    setLean(Math.min(14, level * 180));
+    const d = Math.min(100, t - lastTime); lastTime = t;
+    sustained = level > .025 ? sustained + d : Math.max(0, sustained - d * 2);
+    if (sustained > 180) finish();
+  }
+
+  microphone.onclick = async () => {
+    if (!navigator.mediaDevices?.getUserMedia) { hint.textContent = "Microphone needs HTTPS or a local server. Use the celebrate button below."; return; }
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+      const AC = window.AudioContext || window.webkitAudioContext;
+      audioContext = new AC(); if (audioContext.state === "suspended") await audioContext.resume();
+      analyser = audioContext.createAnalyser(); analyser.fftSize = 1024;
+      samples = new Uint8Array(analyser.fftSize);
+      audioContext.createMediaStreamSource(stream).connect(analyser);
+      microphone.disabled = true; buttonLabel.textContent = "Microphone is on";
+      hint.textContent = "Listening to the room for a moment…";
+      calTotal = calFrames = 0; lastTime = performance.now(); listening = true;
+      requestAnimationFrame(listen);
+    } catch { hint.textContent = "Microphone was blocked. Allow it in browser settings, or use the celebrate button."; }
+  };
+  manualWish.onclick = finish;
+
+  /* ---------- Confetti (canvas created lazily) ---------- */
+  const canvas = $("confetti"), ctx = canvas.getContext("2d"), parts = [];
+  let running = false;
+  const resize = () => { const d = devicePixelRatio || 1; canvas.width = innerWidth * d; canvas.height = innerHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+  resize(); addEventListener("resize", resize);
+  function confetti() {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const cols = ["#ca2e69", "#ffbd35", "#78ddc5", "#8caaff", "#fff8ee"];
+    for (let i = 0; i < 120; i++) parts.push({ x: innerWidth / 2 + (Math.random() - .5) * 130, y: innerHeight * .5, vx: (Math.random() - .5) * 14, vy: -Math.random() * 14 - 4, w: 6 + Math.random() * 6, h: 4 + Math.random() * 5, r: Math.random() * 6, rs: (Math.random() - .5) * .4, c: cols[i % 5] });
+    if (!running) { running = true; requestAnimationFrame(draw); }
+  }
+  function draw() {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i]; p.vy += .28; p.vx *= .992; p.x += p.vx; p.y += p.vy; p.r += p.rs;
+      if (p.y > innerHeight + 30) { parts.splice(i, 1); continue; }
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore();
+    }
+    if (parts.length) requestAnimationFrame(draw); else { running = false; ctx.clearRect(0, 0, innerWidth, innerHeight); }
+  }
+})();
+</script>
+</body>
+</html>
